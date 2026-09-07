@@ -1,210 +1,207 @@
 ﻿#include <iostream>
-#include <fstream>
 #include <string>
-#include <cstring>
 #include <windows.h>
-#include  <cassert>
+
 using namespace std;
 
 
-
-class Chapter {
-
+class Player
+{
 private:
-	int pages{0};
-	double number_of_chapter{ 0.0 };
-	string title_of_chapter{"No title"};
-	string epigraph{ "No epigraph" };
-	
+    string surname;
+    int game_number{ 0 };
+    double rating{ 0.0 };
+
 public:
-	
-	Chapter() : pages(0), number_of_chapter(0.0), title_of_chapter("No title"), epigraph("No epigraph") {
-		cout << "[Chapter] Default constructor: " << title_of_chapter << endl;
-	}
 
-	Chapter(string title,  string epigraph, int pages, double number) : pages(pages), number_of_chapter(number), title_of_chapter(title), epigraph(epigraph) { 
-		cout << "[Chapter] Constructor: " << title_of_chapter << endl; 
-	
-	}
+    Player()
+        : surname("No surname"), game_number(0), rating(0.0)
+    {
+        cout << "[Player] Default constructor: "
+            << surname << endl;
+    }
 
-	~Chapter() {
-		cout << "[Chapter] Destructor: " << title_of_chapter << endl;
-	}
+    Player(string surname, int number, double rating)
+        : surname(surname),
+        game_number(number),
+        rating(rating)
+    {
+        cout << "[Player] Constructor: "
+            << this->surname << endl;
+    }
 
-	void show_chapter() {
-		cout << "Chapter number: " << number_of_chapter << endl;
-		cout << "Title: " << title_of_chapter << endl;
-		cout << "Pages: " << pages << endl;
-		cout << "Epigraph: " << epigraph << endl;
-	}
+    ~Player()
+    {
+        cout << "[Player] Destructor: "
+            << surname << endl;
+    }
 
-	void input() {
-		cout << "Enter chapter number: ";
-		cin >> number_of_chapter;
-		cin.ignore();
-		cout << "Enter title of chapter: ";
-		getline(cin, title_of_chapter);
-		cout << "Enter number of pages: ";
-		cin >> pages;
-		cin.ignore();
-		cout << "Enter epigraph: ";
-		getline(cin, epigraph);
-	}
+    void show_player() const
+    {
+        cout << "Surname: " << surname << endl;
+        cout << "Game number: " << game_number << endl;
+        cout << "Rating: " << rating << endl;
+    }
 
-	int get_pages() const { return pages; }
-	double  get_number_of_chapter() const { return number_of_chapter; }
-	string get_title_of_chapter() const { return title_of_chapter; }
-	string get_epigraph() const { return epigraph; }
 
-	
-	void set_pages(int p) { pages = p; }
-	void set_number_of_chapter(double number) { number_of_chapter = number; }
-	void set_title_of_chapter(string title) { title_of_chapter = title; }
-	void set_epigraph(string ep) { epigraph = ep; }
+    // Getters
 
+    string get_surname() const
+    {
+        return surname;
+    }
+
+    int get_game_number() const
+    {
+        return game_number;
+    }
+
+    double get_rating() const
+    {
+        return rating;
+    }
+
+
+    // Setters
+
+    void set_surname(string new_surname)
+    {
+        surname = new_surname;
+    }
+
+    void set_game_number(int new_number)
+    {
+        game_number = new_number;
+    }
+
+    void set_rating(double new_rating)
+    {
+        rating = new_rating;
+    }
 };
 
-class Book {
 
+class Team
+{
 private:
-	string title_of_book;
-	string genre;
-	string author;
-	Chapter* chapters;
-	int chapter_count{ 0 };
-
-
+    string club_name;
+    Player** players{ nullptr };
+    int player_count{ 0 };
 
 public:
-	Book() : title_of_book("No title"), genre("No genre"), author("No author"), chapters(nullptr), chapter_count(0) {
-		cout << "[Book] Default constructor: " << title_of_book << endl;
-	}
-	Book(string title, string genre, string auth) : title_of_book(title), genre(genre), author(auth), chapters(nullptr), chapter_count(0) {
-	
-		cout << "[Book] Constructor (no chapters): " << title_of_book << endl;
-	}
 
-	Book(const Book& other) : title_of_book(other.title_of_book), genre(other.genre), author(other.author), chapters(nullptr), chapter_count(other.chapter_count) {
-		cout << "[Book] Copy constructor: " << title_of_book << endl;
-		if (other.chapters) {
-			chapters = new Chapter[chapter_count];
-			for (int i = 0; i < chapter_count; i++) {
-				chapters[i] = other.chapters[i];
-			}
-		}
-	}
+    Team()
+        : club_name("No club"),
+        players(nullptr),
+        player_count(0)
+    {
+        cout << "[Team] Default constructor: "
+            << club_name << endl;
+    }
 
-	Book(string title, string bookGenre, string author, int count) : title_of_book(title), genre(bookGenre), author(author), chapter_count(count) {
-		cout << "[Book] Constructor: " << title_of_book << " creating " << chapter_count << " chapters..." << endl;
-		chapters = new Chapter[chapter_count];
-		for (int i = 0; i < chapter_count; i++) {
-			cout << "Enter data for chapter " << i + 1 << ":" << endl;
-			chapters[i].input();
-		}
-	}
-
-	Book& operator=(const Book& other) {
-		if (this == &other) return *this;
-		title_of_book = other.title_of_book;
-		genre = other.genre;
-		author = other.author;
-		chapter_count = other.chapter_count;
-		if (chapters) {
-			delete[] chapters;
-		}
-		chapters = nullptr;
-		if (other.chapters) {
-			chapters = new Chapter[chapter_count];
-			for (int i = 0; i < chapter_count; i++) {
-				chapters[i] = other.chapters[i];
-			}
-		}
-		return *this;
-	}
-
-	Book(Book&& other) noexcept : title_of_book(std::move(other.title_of_book)), genre(std::move(other.genre)), author(std::move(other.author)), chapters(other.chapters), chapter_count(other.chapter_count) {
-		other.chapters = nullptr;
-		other.chapter_count = 0;
-	}
+    Team(string name)
+        : club_name(name),
+        players(nullptr),
+        player_count(0)
+    {
+        cout << "[Team] Constructor: "
+            << club_name << endl;
+    }
 
 
-	~Book() {
-		cout << "[Book] Destructor: " << title_of_book << " (destroying its chapters now)" << endl;
-		for (int i = 0; i < chapter_count; i++) {
-			chapters[i].~Chapter();
-		}
-		
-	}
+    void add_player(Player* player)
+    {
+        Player** temp = new Player * [player_count + 1];
+
+        for (int i = 0; i < player_count; i++)
+        {
+            temp[i] = players[i];
+        }
+
+        temp[player_count] = player;
+
+        delete[] players;
+
+        players = temp;
+        player_count++;
+    }
 
 
+    void show_team() const
+    {
+        cout << "\n===== TEAM =====" << endl;
+        cout << "Club name: " << club_name << endl;
+        cout << "Number of players: " << player_count << endl;
+
+        for (int i = 0; i < player_count; i++)
+        {
+            cout << "\n--- Player " << i + 1 << " ---" << endl;
+            players[i]->show_player();
+        }
+    }
 
 
-	void show_book()  {
-		cout << "Title of book: " << title_of_book << endl;
-		cout << "Genre: " << genre << endl;
-		cout << "Author: " << author << endl;
-		cout << "Number of chapters: " << chapter_count << endl;
-		for (int i = 0; i < chapter_count; i++) {
-			cout << "--- Chapter " << i + 1 << " ---" << endl;
-			chapters[i].show_chapter();
-		}
-		cout << "Total pages: " << total_pages() << endl;
-	}
+    ~Team()
+    {
+        cout << "[Team] Destructor: "
+            << club_name << endl;
 
-	double total_pages()  {
-		double sum = 0;
-		for (int i = 0; i < chapter_count; i++) {
-			sum += chapters[i].get_pages();
-		}
-		return sum;
-	}
+        // ВАЖНО:
+        // игроков здесь НЕ удаляем,
+        // потому что Team ими не владеет.
 
-	string get_title_of_book() const {
-		return title_of_book;
-	}
-
-	string get_genre() const {
-		return genre;
-	}
-
-	string get_author() const {
-		return author;
-	}
-
-	int get_chapter_count() const {
-		return chapter_count;
-	}
+        delete[] players;
+    }
 
 
-	void set_title_of_book(string title) {
-		title_of_book = title;
-	}
+    // Getter
 
-	void set_genre(string new_genre) {
-		genre = new_genre;
-	}
+    string get_club_name() const
+    {
+        return club_name;
+    }
 
-	void set_author(string new_author) {
-		author = new_author;
-	}
 
+    // Setter
+
+    void set_club_name(string new_name)
+    {
+        club_name = new_name;
+    }
 };
 
 
 int main()
 {
-	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
 
-	cout << "===== CREATE BOOK =====" << endl;
+    Player player1("Messi", 10, 9.8);
+    Player player2("Ronaldo", 7, 9.7);
+    Player player3("Mbappe", 9, 9.5);
 
-	Book book("Harry Potter", "Fantasy", "J.K. Rowling", 2);
+    {
+        Team team("Dream Team");
 
-	cout << "\n===== BOOK INFORMATION =====" << endl;
+        team.add_player(&player1);
+        team.add_player(&player2);
+        team.add_player(&player3);
 
-	book.show_book();
+        team.show_team();
 
-	cout << "\n===== END OF MAIN =====" << endl;
+        cout << "\n===== TEAM IS DESTROYED =====" << endl;
+    }
 
-	return 0;
+    cout << "\n===== PLAYERS STILL EXIST =====" << endl;
+
+    player1.show_player();
+    cout << endl;
+
+    player2.show_player();
+    cout << endl;
+
+    player3.show_player();
+    cout << endl;
+
+    return 0;
 }
