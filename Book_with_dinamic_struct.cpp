@@ -26,19 +26,6 @@ public:
 		cout << "[Chapter] Constructor: " << title_of_chapter << endl; 
 	
 	}
-		
-	Chapter(const Chapter& other) : pages(other.pages), number_of_chapter(other.number_of_chapter), title_of_chapter(other.title_of_chapter), epigraph(other.epigraph) {
-		cout << "[Chapter] Copy constructor: " << title_of_chapter << endl;
-	}
-
-	Chapter& operator=(const Chapter& other) {
-		if (this == &other) return *this;
-		pages = other.pages;
-		number_of_chapter = other.number_of_chapter;
-		title_of_chapter = other.title_of_chapter;
-		epigraph = other.epigraph;
-		return *this;
-	}
 
 	~Chapter() {
 		cout << "[Chapter] Destructor: " << title_of_chapter << endl;
@@ -82,21 +69,22 @@ class Book {
 private:
 	string title_of_book;
 	string genre;
+	string author;
 	Chapter* chapters;
 	int chapter_count{ 0 };
 
 
 
 public:
-	Book() : title_of_book("No title"), genre("No genre"), chapters(nullptr), chapter_count(0) {
+	Book() : title_of_book("No title"), genre("No genre"), author("No author"), chapters(nullptr), chapter_count(0) {
 		cout << "[Book] Default constructor: " << title_of_book << endl;
 	}
-	Book(string title, string genre) : title_of_book(title), genre(genre), chapters(nullptr), chapter_count(0) {
+	Book(string title, string genre, string auth) : title_of_book(title), genre(genre), author(auth), chapters(nullptr), chapter_count(0) {
 	
 		cout << "[Book] Constructor (no chapters): " << title_of_book << endl;
 	}
 
-	Book(const Book& other) : title_of_book(other.title_of_book), genre(other.genre), chapters(nullptr), chapter_count(other.chapter_count) {
+	Book(const Book& other) : title_of_book(other.title_of_book), genre(other.genre), author(other.author), chapters(nullptr), chapter_count(other.chapter_count) {
 		cout << "[Book] Copy constructor: " << title_of_book << endl;
 		if (other.chapters) {
 			chapters = new Chapter[chapter_count];
@@ -106,7 +94,7 @@ public:
 		}
 	}
 
-	Book(string title, string bookGenre, int count) : title_of_book(title), genre(bookGenre), chapter_count(count) {
+	Book(string title, string bookGenre, string author, int count) : title_of_book(title), genre(bookGenre), author(author), chapter_count(count) {
 		cout << "[Book] Constructor: " << title_of_book << " creating " << chapter_count << " chapters..." << endl;
 		chapters = new Chapter[chapter_count];
 		for (int i = 0; i < chapter_count; i++) {
@@ -119,6 +107,7 @@ public:
 		if (this == &other) return *this;
 		title_of_book = other.title_of_book;
 		genre = other.genre;
+		author = other.author;
 		chapter_count = other.chapter_count;
 		if (chapters) {
 			delete[] chapters;
@@ -133,9 +122,18 @@ public:
 		return *this;
 	}
 
+	Book(Book&& other) noexcept : title_of_book(std::move(other.title_of_book)), genre(std::move(other.genre)), author(std::move(other.author)), chapters(other.chapters), chapter_count(other.chapter_count) {
+		other.chapters = nullptr;
+		other.chapter_count = 0;
+	}
+
+
 	~Book() {
 		cout << "[Book] Destructor: " << title_of_book << " (destroying its chapters now)" << endl;
-		delete[] chapters;
+		for (int i = 0; i < chapter_count; i++) {
+			chapters[i].~Chapter();
+		}
+		
 	}
 
 
@@ -144,6 +142,7 @@ public:
 	void show_book()  {
 		cout << "Title of book: " << title_of_book << endl;
 		cout << "Genre: " << genre << endl;
+		cout << "Author: " << author << endl;
 		cout << "Number of chapters: " << chapter_count << endl;
 		for (int i = 0; i < chapter_count; i++) {
 			cout << "--- Chapter " << i + 1 << " ---" << endl;
@@ -160,32 +159,52 @@ public:
 		return sum;
 	}
 
+	string get_title_of_book() const {
+		return title_of_book;
+	}
 
+	string get_genre() const {
+		return genre;
+	}
+
+	string get_author() const {
+		return author;
+	}
+
+	int get_chapter_count() const {
+		return chapter_count;
+	}
+
+
+	void set_title_of_book(string title) {
+		title_of_book = title;
+	}
+
+	void set_genre(string new_genre) {
+		genre = new_genre;
+	}
+
+	void set_author(string new_author) {
+		author = new_author;
+	}
 
 };
 
 
 int main()
 {
-	{
-		cout << "=== Creating book with 3 chapters ===" << endl;
-		Book myBook("War and Peace", "Novel", 3);
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
 
-		cout << "\n=== Showing book ===" << endl;
-		myBook.show_book();
+	cout << "===== CREATE BOOK =====" << endl;
 
-		cout << "\n=== Copying book ===" << endl;
-		Book copiedBook(myBook);
-		copiedBook.show_book();
+	Book book("Harry Potter", "Fantasy", "J.K. Rowling", 2);
 
-		cout << "\n=== Assigning book ===" << endl;
-		Book anotherBook("Empty", "None", 1);
-		anotherBook = myBook;
-		anotherBook.show_book();
+	cout << "\n===== BOOK INFORMATION =====" << endl;
 
-		cout << "\n=== End of scope, destructors fire now ===" << endl;
-	}
+	book.show_book();
 
-	cout << "\n=== Program end ===" << endl;
+	cout << "\n===== END OF MAIN =====" << endl;
+
 	return 0;
 }
