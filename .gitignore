@@ -1,0 +1,68 @@
+# --- Скомпилированные файлы и объекты ---
+*.o
+*.obj
+*.lo
+*.la
+*.slo
+
+# --- Библиотеки ---
+*.a
+*.lib
+*.la
+*.lai
+*.so
+*.so.*
+*.dll
+*.dylib
+
+# --- Исполняемые файлы и дампы ---
+*.exe
+*.out
+*.app
+*.i[0-7]
+*.s[0-7]
+*.ilk
+*.exp
+*.idb
+*.pdb
+*.gch
+*.pch
+.DS_Store
+
+# --- Папки систем сборки и IDE ---
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+_deps/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+
+# VS Code
+.vscode/
+
+# Отладка и профилирование
+*.gcno
+*.gcda
+*.gcov
+callgrind.out.*
+perf.data
+x64/
+*.log
+*.tlog
