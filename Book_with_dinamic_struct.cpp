@@ -36,14 +36,14 @@ public:
 
 	~Chapter() {}
 
-	void show_chapter() {
+	 inline void show_chapter() {
 		cout << "Chapter number: " << number_of_chapter << endl;
 		cout << "Title: " << title_of_chapter << endl;
 		cout << "Pages: " << pages << endl;
 		cout << "Epigraph: " << epigraph << endl;
 	}
 
-	void input() {
+	inline void input() {
 		cout << "Enter chapter number: ";
 		cin >> number_of_chapter;
 		cin.ignore();
@@ -56,8 +56,19 @@ public:
 		getline(cin, epigraph);
 	}
 
+	int get_pages() const { return pages; }
+	double get_number_of_chapter() const { return number_of_chapter; }
+	string get_title_of_chapter() const { return title_of_chapter; }
+	string get_epigraph() const { return epigraph; }
+
+	void set_pages(int pages) { this->pages = pages; }
+	void set_number_of_chapter(double number) { this->number_of_chapter = number; }
+	void set_title_of_chapter(const string& title) { this->title_of_chapter = title; }
+	void set_epigraph(const string& epigraph) { this->epigraph = epigraph; }
+
 
 };
+
 
 class Book : public Chapter {
 
@@ -137,6 +148,27 @@ public:
 
 	~Book() {
 		delete[] chapters;
+	}
+
+
+
+	void show_book() const {
+		cout << "Title of book: " << title_of_book << endl;
+		cout << "Genre: " << genre << endl;
+		cout << "Number of chapters: " << chapter_count << endl;
+		for (int i = 0; i < chapter_count; i++) {
+			cout << "--- Chapter " << i + 1 << " ---" << endl;
+			chapters[i].show_chapter();
+		}
+		cout << "Total pages: " << total_pages() << endl;
+	}
+
+	double total_pages() const {
+		double sum = 0;
+		for (int i = 0; i < chapter_count; i++) {
+			sum += chapters[i].get_pages();
+		}
+		return sum;
 	}
 };
 
