@@ -260,4 +260,26 @@ int main()
 	SetConsoleCP(CP_UTF8);
 
 
+	{
+		cout << "=== Creating apartment with 2 rooms ===" << endl;
+		Apartment myApartment(2, 1, 54.5, "Ivan Petrov", "Klaipeda, Taikos g. 15");
+
+		cout << "\n=== Showing apartment ===" << endl;
+		myApartment.show_apartment();
+
+		cout << "\n=== Copying apartment (deep copy check) ===" << endl;
+		Apartment copiedApartment(myApartment);
+		copiedApartment.show_apartment();
+
+		cout << "\n=== Assigning apartment ===" << endl;
+		Apartment anotherApartment(1, 0, 30.0, "Empty", "Nowhere");
+		anotherApartment = myApartment;
+		anotherApartment.show_apartment();
+
+		cout << "\n=== End of scope: watch the destruction order ===" << endl;
+		cout << "Apartment destructor fires FIRST, then its Rooms are destroyed automatically" << endl;
+	}
+
+	cout << "\n=== Program end (all apartments and their rooms are gone) ===" << endl;
+	return 0;
 }
