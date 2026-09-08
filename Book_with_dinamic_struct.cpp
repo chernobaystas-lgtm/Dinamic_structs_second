@@ -6,186 +6,249 @@
 #include  <cassert>
 using namespace std;
 
+enum class RoomType {
+	Living,
+	Bedroom, 
+	Kitchen,
+	Bathroom, 
+	Dining_room,
+	Toilet,
+	Study,
+	Hall,
+	Nursery,
+	Playroom,
+	Dressing_room,
+	Laundry_room,
+	Pantry_Box_room
+};
 
+enum class Furniture {
+	Sofa,
+	Armchair,
+	Coffee_table,
+	TV_stand,
+	Bookcase,
+	Bed,
+	Bedside_table,
+	Wardrobe,
+	Chest_of_drawers,
+	Crib,
+	Desk,
+	Desk_chair,
+	Kitchen_cabinet,
+	Dining_table,
+	Chair,
+	Bar_stool,
+	Countertop,
+	Vanity,
+	Mirror_cabinet,
+	Towel_rack,
+	Coat_rack,
+	Shoe_rack,
+	Ottoman,
+	Full_length_mirror,
+	Storage_shelf,
+	Ironing_board
+};
 
-class Chapter {
+string room_type_to_string(RoomType t) {
+	switch (t) {
+	case RoomType::Living: return "Living";
+	case RoomType::Bedroom: return "Bedroom";
+	case RoomType::Kitchen: return "Kitchen";
+	case RoomType::Bathroom: return "Bathroom";
+	case RoomType::Dining_room: return "Dining room";
+	case RoomType::Toilet: return "Toilet";
+	case RoomType::Study: return "Study";
+	case RoomType::Hall: return "Hall";
+	case RoomType::Nursery: return "Nursery";
+	case RoomType::Playroom: return "Playroom";
+	case RoomType::Dressing_room: return "Dressing room";
+	case RoomType::Laundry_room: return "Laundry room";
+	case RoomType::Pantry_Box_room: return "Pantry/Box room";
+	default: return "Unknown";
+	}
+}
+
+class Room {
 
 private:
-	int pages{0};
-	double number_of_chapter{ 0.0 };
-	string title_of_chapter{"No title"};
-	string epigraph{ "No epigraph" };
+	int How_much_windows;
+	int How_much_sockets;
+	double area;
+	enum class RoomType type_of_room;
+	enum class Furniture furniture;
+
 	
 public:
 	
-	Chapter() : pages(0), number_of_chapter(0.0), title_of_chapter("No title"), epigraph("No epigraph") {
-		cout << "[Chapter] Default constructor: " << title_of_chapter << endl;
+	Room() : How_much_windows(0), How_much_sockets(0), area(0.0), type_of_room(RoomType::Living), furniture(Furniture::Sofa) {
+		cout << "[Room] Default constructor" << endl;
 	}
 
-	Chapter(string title,  string epigraph, int pages, double number) : pages(pages), number_of_chapter(number), title_of_chapter(title), epigraph(epigraph) { 
-		cout << "[Chapter] Constructor: " << title_of_chapter << endl; 
-	
+	Room(int windows, int sockets, double room_area, RoomType room_type, Furniture room_furniture) : How_much_windows(windows), How_much_sockets(sockets), area(room_area), type_of_room(room_type), furniture(room_furniture) {
+		cout << "[Room] Constructor" << endl;
 	}
 
-	~Chapter() {
-		cout << "[Chapter] Destructor: " << title_of_chapter << endl;
+	~Room() {
+		cout << "[Room] Destructor" << endl;
 	}
 
-	void show_chapter() {
-		cout << "Chapter number: " << number_of_chapter << endl;
-		cout << "Title: " << title_of_chapter << endl;
-		cout << "Pages: " << pages << endl;
-		cout << "Epigraph: " << epigraph << endl;
+	friend ostream& operator<<(ostream& out, const Room& room) {
+		out << "Room [" << room_type_to_string(room.type_of_room) << "]: "
+			<< room.area << " m2, "
+			<< room.How_much_windows << " windows, "
+			<< room.How_much_sockets << " sockets";
+		return out;
 	}
 
-	void input() {
-		cout << "Enter chapter number: ";
-		cin >> number_of_chapter;
-		cin.ignore();
-		cout << "Enter title of chapter: ";
-		getline(cin, title_of_chapter);
-		cout << "Enter number of pages: ";
-		cin >> pages;
-		cin.ignore();
-		cout << "Enter epigraph: ";
-		getline(cin, epigraph);
+	friend istream& operator>>(istream& in, Room& room) {
+		in >> room.How_much_windows >> room.How_much_sockets >> room.area;
+
+		cout << "Choose room type (0-Living, 1-Bedroom, 2-Kitchen, 3-Bathroom, 4-Dining_room, "
+			<< "5-Toilet, 6-Study, 7-Hall, 8-Nursery, 9-Playroom, 10-Dressing_room, "
+			<< "11-Laundry_room, 12-Pantry_Box_room): ";
+		int typeInput;
+		in >> typeInput;
+		room.type_of_room = static_cast<RoomType>(typeInput);
+
+		return in;
 	}
 
-	int get_pages() const { return pages; }
-	double  get_number_of_chapter() const { return number_of_chapter; }
-	string get_title_of_chapter() const { return title_of_chapter; }
-	string get_epigraph() const { return epigraph; }
+	int get_How_much_windows() const { return How_much_windows; }
+	int get_How_much_sockets() const { return How_much_sockets; }
+	double get_area() const { return area; }
+	RoomType get_type_of_room() const { return type_of_room; }
+	Furniture get_furniture() const { return furniture; }
 
-	
-	void set_pages(int p) { pages = p; }
-	void set_number_of_chapter(double number) { number_of_chapter = number; }
-	void set_title_of_chapter(string title) { title_of_chapter = title; }
-	void set_epigraph(string ep) { epigraph = ep; }
+	void set_How_much_windows(int p) { How_much_windows = p; }
+	void set_How_much_sockets(int p) { How_much_sockets = p; }
+	void set_area(double p) { area = p; }
+	void set_type_of_room(RoomType p) { type_of_room = p; }
+	void set_furniture(Furniture p) { furniture = p; }
+
+
 
 };
 
-class Book {
+class Apartment {
 
 private:
-	string title_of_book;
-	string genre;
-	string author;
-	Chapter* chapters;
-	int chapter_count{ 0 };
+	Room* Rooms;
+	int room_count;
+	int balcony_count;
+	double square;
+	string name_of_resident;
+	string address;
 
 
 
 public:
-	Book() : title_of_book("No title"), genre("No genre"), author("No author"), chapters(nullptr), chapter_count(0) {
-		cout << "[Book] Default constructor: " << title_of_book << endl;
-	}
-	Book(string title, string genre, string auth) : title_of_book(title), genre(genre), author(auth), chapters(nullptr), chapter_count(0) {
-	
-		cout << "[Book] Constructor (no chapters): " << title_of_book << endl;
-	}
 
-	Book(const Book& other) : title_of_book(other.title_of_book), genre(other.genre), author(other.author), chapters(nullptr), chapter_count(other.chapter_count) {
-		cout << "[Book] Copy constructor: " << title_of_book << endl;
-		if (other.chapters) {
-			chapters = new Chapter[chapter_count];
-			for (int i = 0; i < chapter_count; i++) {
-				chapters[i] = other.chapters[i];
-			}
+	void show_rooms() const {
+		if (Rooms == nullptr) {
+			cout << "No rooms in the apartment." << endl;
+			return;
+		}
+		for (int i = 0; i < room_count; ++i) {
+			cout << Rooms[i] << endl;
 		}
 	}
 
-	Book(string title, string bookGenre, string author, int count) : title_of_book(title), genre(bookGenre), author(author), chapter_count(count) {
-		cout << "[Book] Constructor: " << title_of_book << " creating " << chapter_count << " chapters..." << endl;
-		chapters = new Chapter[chapter_count];
-		for (int i = 0; i < chapter_count; i++) {
-			cout << "Enter data for chapter " << i + 1 << ":" << endl;
-			chapters[i].input();
+	inline int get_balcony_count() const {
+		return balcony_count;
+	}
+
+	inline double get_square() const {
+		return square;
+	}
+
+	inline string get_name_of_resident() const {
+		return name_of_resident;
+	}
+
+	inline string get_address() const {
+		return address;
+	}
+
+	inline void set_balcony_count(int count) {
+		balcony_count = count;
+	}
+
+	inline void set_square(double sq) {
+		square = sq;
+	}
+
+	inline void set_name_of_resident(const string& name) {
+		name_of_resident = name;
+	}
+
+	inline void set_address(const string& addr) {
+		address = addr;
+	}
+
+
+
+
+	Apartment() : Rooms(nullptr), balcony_count(0), room_count(0), square(0.0), name_of_resident(""), address("") {
+		cout << "[Apartment] Default constructor" << endl;
+	}
+
+	Apartment(int balcony_count, double square, const string& name_of_resident, const string& address)
+		: Rooms(nullptr), balcony_count(balcony_count), room_count(0), square(square), name_of_resident(name_of_resident), address(address) {
+		cout << "[Apartment] Constructor" << endl;
+	}
+
+	~Apartment() {
+		cout << "[Apartment] Destructor" << endl;
+		delete[] Rooms;
+	}
+
+	Apartment(const Apartment& other)
+		: Rooms(nullptr), balcony_count(other.balcony_count), square(other.square),
+		name_of_resident(other.name_of_resident), address(other.address), room_count(other.room_count)
+	{
+		cout << "[Apartment] Copy constructor: " << address << endl;
+		if (other.Rooms) {
+			Rooms = new Room[room_count];
+			for (int i = 0; i < room_count; ++i) Rooms[i] = other.Rooms[i];
 		}
 	}
 
-	Book& operator=(const Book& other) {
+	Apartment& operator=(const Apartment& other) {
 		if (this == &other) return *this;
-		title_of_book = other.title_of_book;
-		genre = other.genre;
-		author = other.author;
-		chapter_count = other.chapter_count;
-		if (chapters) {
-			delete[] chapters;
-		}
-		chapters = nullptr;
-		if (other.chapters) {
-			chapters = new Chapter[chapter_count];
-			for (int i = 0; i < chapter_count; i++) {
-				chapters[i] = other.chapters[i];
-			}
+		balcony_count = other.balcony_count;
+		square = other.square;
+		name_of_resident = other.name_of_resident;
+		address = other.address;
+		room_count = other.room_count;
+		delete[] Rooms;
+		Rooms = nullptr;
+		if (other.Rooms) {
+			Rooms = new Room[room_count];
+			for (int i = 0; i < room_count; ++i) Rooms[i] = other.Rooms[i];
 		}
 		return *this;
 	}
 
-	Book(Book&& other) noexcept : title_of_book(std::move(other.title_of_book)), genre(std::move(other.genre)), author(std::move(other.author)), chapters(other.chapters), chapter_count(other.chapter_count) {
-		other.chapters = nullptr;
-		other.chapter_count = 0;
-	}
-
-
-	~Book() {
-		cout << "[Book] Destructor: " << title_of_book << " (destroying its chapters now)" << endl;
-		for (int i = 0; i < chapter_count; i++) {
-			chapters[i].~Chapter();
+	Apartment(int roomCount, int balconyCnt, double sq, const string& name, const string& addr)
+		: Rooms(nullptr), room_count(roomCount), balcony_count(balconyCnt), square(sq),
+		name_of_resident(name), address(addr)
+	{
+		cout << "[Apartment] Constructor: creating " << room_count << " rooms..." << endl;
+		Rooms = new Room[room_count];
+		for (int i = 0; i < room_count; ++i) {
+			cout << "Enter data for room " << i + 1 << ":" << endl;
+			cin >> Rooms[i];
 		}
-		
 	}
 
-
-
-
-	void show_book()  {
-		cout << "Title of book: " << title_of_book << endl;
-		cout << "Genre: " << genre << endl;
-		cout << "Author: " << author << endl;
-		cout << "Number of chapters: " << chapter_count << endl;
-		for (int i = 0; i < chapter_count; i++) {
-			cout << "--- Chapter " << i + 1 << " ---" << endl;
-			chapters[i].show_chapter();
-		}
-		cout << "Total pages: " << total_pages() << endl;
-	}
-
-	double total_pages()  {
-		double sum = 0;
-		for (int i = 0; i < chapter_count; i++) {
-			sum += chapters[i].get_pages();
-		}
-		return sum;
-	}
-
-	string get_title_of_book() const {
-		return title_of_book;
-	}
-
-	string get_genre() const {
-		return genre;
-	}
-
-	string get_author() const {
-		return author;
-	}
-
-	int get_chapter_count() const {
-		return chapter_count;
-	}
-
-
-	void set_title_of_book(string title) {
-		title_of_book = title;
-	}
-
-	void set_genre(string new_genre) {
-		genre = new_genre;
-	}
-
-	void set_author(string new_author) {
-		author = new_author;
+	void show_apartment() const {
+		cout << "Address: " << address << endl;
+		cout << "Resident: " << name_of_resident << endl;
+		cout << "Total area: " << square << " m2" << endl;
+		cout << "Balconies: " << balcony_count << endl;
+		show_rooms();
 	}
 
 };
@@ -196,15 +259,5 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	cout << "===== CREATE BOOK =====" << endl;
 
-	Book book("Harry Potter", "Fantasy", "J.K. Rowling", 2);
-
-	cout << "\n===== BOOK INFORMATION =====" << endl;
-
-	book.show_book();
-
-	cout << "\n===== END OF MAIN =====" << endl;
-
-	return 0;
 }
