@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Book_with_dinamic_struct.vcxproj" />
+  <Project Path="Book_with_dinamic_struct.vcxproj" Id="8b325e55-b7f2-4c87-a86e-d4fc4ff2a437" />
 </Solution>
