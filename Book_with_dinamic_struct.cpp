@@ -11,15 +11,16 @@ protected:
 	string brand;
 	double speed;
 public:
-	Vehicle(string brand, double speed) : brand(brand), speed(speed) {}
+	Vehicle(const string& brand, double speed) : brand(brand), speed(speed) {}
 	Vehicle() : brand(""), speed(0) {}
-	~Vehicle() {}
+	virtual ~Vehicle() {}
 
 	// Getters
 
 	string get_brand() const { return brand; }
 	double get_speed() const { return speed; }
 
+	// Setters
 
 	int set_brand(string brand) {
 		if (brand.empty()) {
@@ -47,9 +48,9 @@ class Car : public Vehicle {
 private:
 	int num_doors;
 public:
-	Car(string brand, double speed, int num_doors) : Vehicle(brand, speed), num_doors(num_doors) {}
+	Car(const string& brand, double speed, int num_doors) : Vehicle(brand, speed), num_doors(num_doors) {}
 	Car() : Vehicle(), num_doors(0) {}
-	~Car() {}
+	virtual ~Car() {}
 	int get_num_doors() const { return num_doors; }
 	int set_num_doors(int num_doors) {
 		if (num_doors < 0) {
@@ -69,9 +70,9 @@ class Bicycle : public Vehicle {
 private:
 	bool hasBasket;
 public:
-	Bicycle(string brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
+	Bicycle(const string& brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
 	Bicycle() : Vehicle(), hasBasket(false) {}
-	~Bicycle() {}
+	virtual ~Bicycle() {}
 	bool get_hasBasket() const { return hasBasket; }
 	int set_hasBasket(bool hasBasket) {
 		this->hasBasket = hasBasket;
@@ -90,12 +91,9 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-		Car car("Toyota Corolla", 180, 4);
-		Bicycle bike("Stels Navigator", 25, true);
+	Vehicle* vehicles = new Vehicle("Toyota Corolla", 180);
+	vehicles-> displayInfo();
+	cout << endl;
 
-		car.displayInfo();
-		cout << endl;
-		bike.displayInfo();
-
-		return 0;
+	return 0;
 }
