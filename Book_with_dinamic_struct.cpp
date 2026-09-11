@@ -37,7 +37,7 @@ public:
 		this->speed = speed;
 		return 0;
 	}
-	void display() const {
+	void displayInfo() const {
 		cout << "Brand: " << brand << endl;
 		cout << "Speed: " << speed << endl;
 	}
@@ -59,26 +59,26 @@ public:
 		this->num_doors = num_doors;
 		return 0;
 	}
-	void display() const {
-		Vehicle::display();
+	void displayInfo() const {
+		Vehicle::displayInfo();
 		cout << "Number of doors: " << num_doors << endl;
 	}
 };
 
-class Bycle : public Vehicle {
+class Bicycle : public Vehicle {
 private:
 	bool hasBasket;
 public:
-	Bycle(string brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
-	Bycle() : Vehicle(), hasBasket(false) {}
-	~Bycle() {}
+	Bicycle(string brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
+	Bicycle() : Vehicle(), hasBasket(false) {}
+	~Bicycle() {}
 	bool get_hasBasket() const { return hasBasket; }
 	int set_hasBasket(bool hasBasket) {
 		this->hasBasket = hasBasket;
 		return 0;
 	}
-	void display() const {
-		Vehicle::display();
+	void displayInfo() const {
+		Vehicle::displayInfo();
 		cout << "Has basket: " << (hasBasket ? "Yes" : "No") << endl;
 	}
 
@@ -90,5 +90,12 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
+		Car car("Toyota Corolla", 180, 4);
+		Bicycle bike("Stels Navigator", 25, true);
 
+		car.displayInfo();
+		cout << endl;
+		bike.displayInfo();
+
+		return 0;
 }
