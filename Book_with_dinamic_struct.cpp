@@ -114,6 +114,8 @@ public:
 	Cat(const string& name, const string& breed, const string& color,
 		const string& PetParent_name, double weight, double height, int age, bool isIndoor)
 		: Pet(name, breed, color, PetParent_name, weight, height, age), isIndoor(isIndoor) {}
+	virtual ~Cat() {
+	}
 
 	string getSound() const override { return "Meow"; }
 	string getType() const override { return "Cat"; }
@@ -124,7 +126,7 @@ public:
 		return this->isIndoor;
 	}
 	virtual void displayInfo() const {
-		Pet::displayInfo;
+		Pet::displayInfo();
 		cout << "Indoor: " << (isIndoor ? "Yes" : "No") << endl;
 	}
 };
@@ -138,7 +140,7 @@ public:
 	Dog(const string& name, const string& breed, const string& color,
 		const string& PetParent_name, double weight, double height, int age, bool isTrained)
 		: Pet(name, breed, color, PetParent_name, weight, height, age), isTrained(isTrained) {}
-
+	virtual ~Dog() {}
 	string getSound() const override { return "Woof"; }
 	string getType() const override { return "Dog"; }
 
@@ -162,7 +164,7 @@ public:
 	Parrot(const string& name, const string& breed, const string& color,
 		const string& PetParent_name, double weight, double height, int age, bool canTalk)
 		: Pet(name, breed, color, PetParent_name, weight, height, age), canTalk(canTalk) {}
-
+	virtual ~Parrot() {}
 	string getSound() const override { return "Squawk"; }
 	string getType() const override { return "Parrot"; }
 
@@ -186,7 +188,7 @@ public:
 	Hamster(const string& name, const string& breed, const string& color,
 		const string& PetParent_name, double weight, double height, int age, bool hasWheel)
 		: Pet(name, breed, color, PetParent_name, weight, height, age), hasWheel(hasWheel) {}
-
+	virtual ~Hamster() {}
 	string getSound() const override { return "Squeak"; }
 	string getType() const override { return "Hamster"; }
 
@@ -203,21 +205,25 @@ public:
 };
 
 
-int main()
-{
+int main() {
+
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	Cat cat("Murka", "British", "Grey", "Olena", 4.5, 30.0, 2, true);
-	Dog dog("Rex", "Labrador", "Brown", "Ivan", 25.0, 55.0, 3, true);
-	Parrot parrot("Kesha", "Macaw", "Green", "Petro", 0.4, 30.0, 1, true);
-	Hamster hamster("Fluffy", "Syrian", "White", "Anna", 0.15, 10.0, 1, false);
+	Pet* cat = new Cat("Murka", "British", "Grey", "Olena", 4.5, 30.0, 2, true);
+	Pet* dog = new Dog("Rex", "Labrador", "Brown", "Ivan", 25.0, 55.0, 3, true);
+	Pet* parrot = new Parrot("Kesha", "Macaw", "Green", "Petro", 0.4, 30.0, 1, true);
+	Pet* hamster = new Hamster("Fluffy", "Syrian", "White", "Anna", 0.15, 10.0, 1, false);
 
-	cat.displayInfo();
-	dog.displayInfo();
-	parrot.displayInfo();
-	hamster.displayInfo();
+	cat->displayInfo();
+	dog->displayInfo();
+	parrot->displayInfo();
+	hamster->displayInfo();
+
+	delete cat;
+	delete dog;
+	delete parrot;
+	delete hamster;
 
 	return 0;
-
 }
