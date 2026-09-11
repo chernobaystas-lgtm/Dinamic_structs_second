@@ -29,7 +29,7 @@ public:
 		this->brand = brand;
 		return 0;
 	}
-	int set_speed(int speed) {
+	int set_speed(double speed) {
 		if (speed < 0) {
 			cerr << "Speed cannot be negative!" << endl;
 			return -1;
@@ -37,11 +37,52 @@ public:
 		this->speed = speed;
 		return 0;
 	}
-
+	void display() const {
+		cout << "Brand: " << brand << endl;
+		cout << "Speed: " << speed << endl;
+	}
 };
 
+class Car : public Vehicle {
+private:
+	int num_doors;
+public:
+	Car(string brand, double speed, int num_doors) : Vehicle(brand, speed), num_doors(num_doors) {}
+	Car() : Vehicle(), num_doors(0) {}
+	~Car() {}
+	int get_num_doors() const { return num_doors; }
+	int set_num_doors(int num_doors) {
+		if (num_doors < 0) {
+			cerr << "Number of doors cannot be negative!" << endl;
+			return -1;
+		}
+		this->num_doors = num_doors;
+		return 0;
+	}
+	void display() const {
+		Vehicle::display();
+		cout << "Number of doors: " << num_doors << endl;
+	}
+};
 
+class Bycle : public Vehicle {
+private:
+	bool hasBasket;
+public:
+	Bycle(string brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
+	Bycle() : Vehicle(), hasBasket(false) {}
+	~Bycle() {}
+	bool get_hasBasket() const { return hasBasket; }
+	int set_hasBasket(bool hasBasket) {
+		this->hasBasket = hasBasket;
+		return 0;
+	}
+	void display() const {
+		Vehicle::display();
+		cout << "Has basket: " << (hasBasket ? "Yes" : "No") << endl;
+	}
 
+};
 
 
 int main()
