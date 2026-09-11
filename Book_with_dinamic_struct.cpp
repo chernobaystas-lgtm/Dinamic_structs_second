@@ -6,83 +6,200 @@
 #include <cassert>
 using namespace std;
 
-class Vehicle {
+class Pet {
 protected:
-	string brand;
-	double speed;
+	string name;
+	string  breed;
+	string color;
+	string PetParent_name;
+	double weight;
+	double height;
+	int age;
+
 public:
-	Vehicle(const string& brand, double speed) : brand(brand), speed(speed) {}
-	Vehicle() : brand(""), speed(0) {}
-	virtual ~Vehicle() {}
+	Pet() : name(""), breed(""), color(""), PetParent_name(""), weight(0.0), height(0.0), age(0) {}
+	Pet(const string& name, const string& breed, const string& color, const string& PetParent_name, double weight, double height, int age)
+		: name(name), breed(breed), color(color), PetParent_name(PetParent_name), weight(weight), height(height), age(age) {}
+	virtual ~Pet() {}
+
+	// For sound and type of pet, we can use virtual functions to allow derived classes to override these behaviors.
+
+	virtual string getSound() const = 0;
+	virtual string getType() const = 0;
+
+
 
 	// Getters
-
-	string get_brand() const { return brand; }
-	double get_speed() const { return speed; }
+	string getName() const { return name; }
+	string getBreed() const { return breed; }
+	string getColor() const { return color; }
+	string getPetParent_name() const { return PetParent_name; }
+	double getWeight() const { return weight; }
+	double getHeight() const { return height; }
+	int getAge() const { return age; }
 
 	// Setters
 
-	int set_brand(string brand) {
-		if (brand.empty()) {
-			cerr << "Brand cannot be empty!" << endl;
+	string setName(const string& name) {
+		if (name.empty()) {
+			cerr << "Name cannot be empty!" << endl;
+			return "";
+		}
+		this->name = name;
+		return this->name;
+	}
+	string setBreed(const string& breed) {
+		if (breed.empty()) {
+			cerr << "Breed cannot be empty!" << endl;
+			return "";
+		}
+		this->breed = breed;
+		return this->breed;
+	}
+	string setColor(const string& color) {
+		if (color.empty()) {
+			cerr << "Color cannot be empty!" << endl;
+			return "";
+		}
+		this->color = color;
+		return this->color;
+	}
+	string  setPetParent_name(const string& PetParent_name) {
+		if (PetParent_name.empty()) {
+			cerr << "Pet parent name cannot be empty!" << endl;
+			return "";
+		}
+		this->PetParent_name = PetParent_name;
+		return this->PetParent_name;
+	}
+	double setWeight(double weight) {
+		if (weight < 0) {
+			cerr << "Weight cannot be negative!" << endl;
 			return -1;
 		}
-		this->brand = brand;
-		return 0;
+		this->weight = weight;
+		return this->weight;
 	}
-	int set_speed(double speed) {
-		if (speed < 0) {
-			cerr << "Speed cannot be negative!" << endl;
+	double setHeight(double height) {
+		if (height < 0) {
+			cerr << "Height cannot be negative!" << endl;
 			return -1;
 		}
-		this->speed = speed;
-		return 0;
+		this->height = height;
+		return this->height;
 	}
-	void displayInfo() const {
-		cout << "Brand: " << brand << endl;
-		cout << "Speed: " << speed << endl;
+	int setAge(int age) {
+		if (age < 0) {
+			cerr << "Age cannot be negative!" << endl;
+			return -1;
+		}
+		this->age = age;
+		return this->age;
+	}
+
+	virtual void displayInfo() const {
+		cout << "Name: " << name << ", Breed: " << breed << ", Color: " << color
+			<< ", Owner: " << PetParent_name << ", Weight: " << weight
+			<< ", Height: " << height << ", Age: " << age
+			<< ", Type: " << getType() << ", Sound: " << getSound() << endl;
+	}
+
+};
+
+class Cat : public Pet {
+private:
+	bool isIndoor;
+
+public:
+	Cat(const string& name, const string& breed, const string& color,
+		const string& PetParent_name, double weight, double height, int age, bool isIndoor)
+		: Pet(name, breed, color, PetParent_name, weight, height, age), isIndoor(isIndoor) {}
+
+	string getSound() const override { return "Meow"; }
+	string getType() const override { return "Cat"; }
+
+	bool getIsIndoor() const { return isIndoor; }
+	bool setIsIndoor(bool isIndoor) {
+		this->isIndoor = isIndoor;
+		return this->isIndoor;
+	}
+	virtual void displayInfo() const {
+		Pet::displayInfo;
+		cout << "Indoor: " << (isIndoor ? "Yes" : "No") << endl;
 	}
 };
 
-class Car : public Vehicle {
+
+class Dog : public Pet {
 private:
-	int num_doors;
+	bool isTrained;
+
 public:
-	Car(const string& brand, double speed, int num_doors) : Vehicle(brand, speed), num_doors(num_doors) {}
-	Car() : Vehicle(), num_doors(0) {}
-	virtual ~Car() {}
-	int get_num_doors() const { return num_doors; }
-	int set_num_doors(int num_doors) {
-		if (num_doors < 0) {
-			cerr << "Number of doors cannot be negative!" << endl;
-			return -1;
-		}
-		this->num_doors = num_doors;
-		return 0;
+	Dog(const string& name, const string& breed, const string& color,
+		const string& PetParent_name, double weight, double height, int age, bool isTrained)
+		: Pet(name, breed, color, PetParent_name, weight, height, age), isTrained(isTrained) {}
+
+	string getSound() const override { return "Woof"; }
+	string getType() const override { return "Dog"; }
+
+	bool getIsTrained() const { return isTrained; }
+	bool setIsTrained(bool isTrained) {
+		this->isTrained = isTrained;
+		return this->isTrained;
 	}
-	void displayInfo() const {
-		Vehicle::displayInfo();
-		cout << "Number of doors: " << num_doors << endl;
+
+	void displayInfo() const override {
+		Pet::displayInfo();
+		cout << "Trained: " << (isTrained ? "Yes" : "No") << endl;
 	}
 };
 
-class Bicycle : public Vehicle {
+class Parrot : public Pet {
 private:
-	bool hasBasket;
+	bool canTalk;
+
 public:
-	Bicycle(const string& brand, double speed, bool hasBasket) : Vehicle(brand, speed), hasBasket(hasBasket) {}
-	Bicycle() : Vehicle(), hasBasket(false) {}
-	virtual ~Bicycle() {}
-	bool get_hasBasket() const { return hasBasket; }
-	int set_hasBasket(bool hasBasket) {
-		this->hasBasket = hasBasket;
-		return 0;
-	}
-	void displayInfo() const {
-		Vehicle::displayInfo();
-		cout << "Has basket: " << (hasBasket ? "Yes" : "No") << endl;
+	Parrot(const string& name, const string& breed, const string& color,
+		const string& PetParent_name, double weight, double height, int age, bool canTalk)
+		: Pet(name, breed, color, PetParent_name, weight, height, age), canTalk(canTalk) {}
+
+	string getSound() const override { return "Squawk"; }
+	string getType() const override { return "Parrot"; }
+
+	bool getCanTalk() const { return canTalk; }
+	bool setCanTalk(bool canTalk) {
+		this->canTalk = canTalk;
+		return this->canTalk;
 	}
 
+	void displayInfo() const override {
+		Pet::displayInfo();
+		cout << "Can talk: " << (canTalk ? "Yes" : "No") << endl;
+	}
+};
+
+class Hamster : public Pet {
+private:
+	bool hasWheel;
+
+public:
+	Hamster(const string& name, const string& breed, const string& color,
+		const string& PetParent_name, double weight, double height, int age, bool hasWheel)
+		: Pet(name, breed, color, PetParent_name, weight, height, age), hasWheel(hasWheel) {}
+
+	string getSound() const override { return "Squeak"; }
+	string getType() const override { return "Hamster"; }
+
+	bool getHasWheel() const { return hasWheel; }
+	bool setHasWheel(bool hasWheel) {
+		this->hasWheel = hasWheel;
+		return this->hasWheel;
+	}
+
+	void displayInfo() const override {
+		Pet::displayInfo();
+		cout << "Has wheel: " << (hasWheel ? "Yes" : "No") << endl;
+	}
 };
 
 
@@ -91,9 +208,17 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	Vehicle* vehicles = new Vehicle("Toyota Corolla", 180);
-	vehicles-> displayInfo();
-	cout << endl;
+	Cat cat("Murka", "British", "Grey", "Olena", 4.5, 30.0, 2, true);
+	Dog dog("Rex", "Labrador", "Brown", "Ivan", 25.0, 55.0, 3, true);
+	Parrot parrot("Kesha", "Macaw", "Green", "Petro", 0.4, 30.0, 1, true);
+	Hamster hamster("Fluffy", "Syrian", "White", "Anna", 0.15, 10.0, 1, false);
+
+	cat.displayInfo();
+	dog.displayInfo();
+	parrot.displayInfo();
+	hamster.displayInfo();
+
+	return 0;
 
 	return 0;
 }
