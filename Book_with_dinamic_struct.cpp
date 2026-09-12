@@ -44,8 +44,28 @@ public:
 		this->n3 = n3;
 		return 0;
 	}
+
+	inline void display() {
+		cout << "n1:" << n1 <<endl <<"n2:" << n2 <<endl << "n3" << n3;
+	}
+
+
+	inline void increaseN1() {
+		setN1(getN1() + 1);
+	}
+
+	inline void increaseN2() {
+		setN2(getN2() + 1);
+	}
+	inline void increaseN3() {
+		setN3(getN3() + 1);
+	}
 };
 
+
+class Date : public triada {
+
+};
 
 int main() {
 
