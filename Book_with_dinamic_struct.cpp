@@ -6,224 +6,179 @@
 #include <cassert>
 using namespace std;
 
-class Pet {
+struct FullName {
+    string lastName;
+    string firstName;
+    string patronymic;
+};
+
+struct DateTime {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+};
+
+class Employee {
 protected:
-	string name;
-	string  breed;
-	string color;
-	string PetParent_name;
-	double weight;
-	double height;
-	int age;
+    FullName fio;
+    DateTime birthDate;
+    int experience;       // стаж (у роках)
+    double baseSalary;    // ставка за годину (в євро)
+    DateTime workTime;    // скільки годин/хвилин/секунд працює за день
+    int workingDays;      // робочих днів на місяць
 
 public:
-	Pet() : name(""), breed(""), color(""), PetParent_name(""), weight(0.0), height(0.0), age(0) {}
-	Pet(const string& name, const string& breed, const string& color, const string& PetParent_name, double weight, double height, int age)
-		: name(name), breed(breed), color(color), PetParent_name(PetParent_name), weight(weight), height(height), age(age) {}
-	virtual ~Pet() {}
+    Employee(const FullName& fio, const DateTime& birthDate, int experience,
+        double baseSalary, const DateTime& workTime, int workingDays)
+        : fio(fio), birthDate(birthDate), experience(experience),
+        baseSalary(baseSalary), workTime(workTime), workingDays(workingDays) {}
 
-	// For sound and type of pet, we can use virtual functions to allow derived classes to override these behaviors.
+    virtual ~Employee() {}
 
-	virtual string getSound() const = 0;
-	virtual string getType() const = 0;
+    virtual double calculateSalary() const = 0;
+    virtual string whatIDo() const = 0;
 
+    double getHoursPerDay() const {
+        return workTime.hour + workTime.minute / 60.0 + workTime.second / 3600.0;
+    }
 
+protected:
+    // базовий заробіток без бонусів: ставка * години на день * робочі дні
+    double calculateBasePay() const {
+        return baseSalary * getHoursPerDay() * workingDays;
+    }
 
-	// Getters
-	string getName() const { return name; }
-	string getBreed() const { return breed; }
-	string getColor() const { return color; }
-	string getPetParent_name() const { return PetParent_name; }
-	double getWeight() const { return weight; }
-	double getHeight() const { return height; }
-	int getAge() const { return age; }
-
-	// Setters
-
-	string setName(const string& name) {
-		if (name.empty()) {
-			cerr << "Name cannot be empty!" << endl;
-			return "";
-		}
-		this->name = name;
-		return this->name;
-	}
-	string setBreed(const string& breed) {
-		if (breed.empty()) {
-			cerr << "Breed cannot be empty!" << endl;
-			return "";
-		}
-		this->breed = breed;
-		return this->breed;
-	}
-	string setColor(const string& color) {
-		if (color.empty()) {
-			cerr << "Color cannot be empty!" << endl;
-			return "";
-		}
-		this->color = color;
-		return this->color;
-	}
-	string  setPetParent_name(const string& PetParent_name) {
-		if (PetParent_name.empty()) {
-			cerr << "Pet parent name cannot be empty!" << endl;
-			return "";
-		}
-		this->PetParent_name = PetParent_name;
-		return this->PetParent_name;
-	}
-	double setWeight(double weight) {
-		if (weight < 0) {
-			cerr << "Weight cannot be negative!" << endl;
-			return -1;
-		}
-		this->weight = weight;
-		return this->weight;
-	}
-	double setHeight(double height) {
-		if (height < 0) {
-			cerr << "Height cannot be negative!" << endl;
-			return -1;
-		}
-		this->height = height;
-		return this->height;
-	}
-	int setAge(int age) {
-		if (age < 0) {
-			cerr << "Age cannot be negative!" << endl;
-			return -1;
-		}
-		this->age = age;
-		return this->age;
-	}
-
-	virtual void displayInfo() const {
-		cout << "Name: " << name << ", Breed: " << breed << ", Color: " << color
-			<< ", Owner: " << PetParent_name << ", Weight: " << weight
-			<< ", Height: " << height << ", Age: " << age
-			<< ", Type: " << getType() << ", Sound: " << getSound() << endl;
-	}
-
+public:
+    virtual void displayInfo() const {
+        cout << fio.lastName << " " << fio.firstName << " " << fio.patronymic
+            << ", Birth date: " << birthDate.day << "." << birthDate.month << "." << birthDate.year
+            << ", Experience: " << experience << " years"
+            << ", Hours/day: " << getHoursPerDay()
+            << ", Working days: " << workingDays
+            << ", Role: " << whatIDo()
+            << ", Salary: " << calculateSalary() << " EUR" << endl;
+    }
 };
 
-class Cat : public Pet {
+class Manager : public Employee {
 private:
-	bool isIndoor;
+    double bonus;
 
 public:
-	Cat(const string& name, const string& breed, const string& color,
-		const string& PetParent_name, double weight, double height, int age, bool isIndoor)
-		: Pet(name, breed, color, PetParent_name, weight, height, age), isIndoor(isIndoor) {}
-	virtual ~Cat() {
-	}
+    Manager(const FullName& fio, const DateTime& birthDate, int experience,
+        const DateTime& workTime, int workingDays, double bonus)
+        : Employee(fio, birthDate, experience, 12.0, workTime, workingDays), bonus(bonus) {}
 
-	string getSound() const override { return "Meow"; }
-	string getType() const override { return "Cat"; }
+    double calculateSalary() const override {
+        return calculateBasePay() + bonus;
+    }
 
-	bool getIsIndoor() const { return isIndoor; }
-	bool setIsIndoor(bool isIndoor) {
-		this->isIndoor = isIndoor;
-		return this->isIndoor;
-	}
-	virtual void displayInfo() const {
-		Pet::displayInfo();
-		cout << "Indoor: " << (isIndoor ? "Yes" : "No") << endl;
-	}
+    string whatIDo() const override {
+        return "Manager: manages the team and controls plan fulfillment";
+    }
 };
 
+enum class Specialization {
+    Frontend,
+    Backend,
+    Fullstack,
+    Mobile,
+    GameDev
+};
 
-class Dog : public Pet {
+string specializationToString(Specialization s) {
+    switch (s) {
+    case Specialization::Frontend: return "Frontend developer";
+    case Specialization::Backend: return "Backend developer";
+    case Specialization::Fullstack: return "Fullstack developer";
+    case Specialization::Mobile: return "Mobile developer";
+    case Specialization::GameDev: return "Game developer";
+    }
+    return "Developer";
+}
+
+class Developer : public Employee {
 private:
-	bool isTrained;
+    int linesOfCode;
+    double ratePerLine;
+    Specialization specialization;
 
 public:
-	Dog(const string& name, const string& breed, const string& color,
-		const string& PetParent_name, double weight, double height, int age, bool isTrained)
-		: Pet(name, breed, color, PetParent_name, weight, height, age), isTrained(isTrained) {}
-	virtual ~Dog() {}
-	string getSound() const override { return "Woof"; }
-	string getType() const override { return "Dog"; }
+    Developer(const FullName& fio, const DateTime& birthDate, int experience,
+        const DateTime& workTime, int workingDays, int linesOfCode, Specialization specialization)
+        : Employee(fio, birthDate, experience, 12.0, workTime, workingDays),
+        linesOfCode(linesOfCode), ratePerLine(0.50), specialization(specialization) {}
 
-	bool getIsTrained() const { return isTrained; }
-	bool setIsTrained(bool isTrained) {
-		this->isTrained = isTrained;
-		return this->isTrained;
-	}
+    double calculateSalary() const override {
+        return calculateBasePay() + (linesOfCode * ratePerLine);
+    }
 
-	void displayInfo() const override {
-		Pet::displayInfo();
-		cout << "Trained: " << (isTrained ? "Yes" : "No") << endl;
-	}
+    string whatIDo() const override {
+        return specializationToString(specialization) + ": writes and supports code";
+    }
 };
 
-class Parrot : public Pet {
-private:
-	bool canTalk;
+Specialization chooseSpecialization() {
+    cout << "Choose developer specialization:" << endl;
+    cout << "1 - Frontend" << endl;
+    cout << "2 - Backend" << endl;
+    cout << "3 - Fullstack" << endl;
+    cout << "4 - Mobile" << endl;
+    cout << "5 - GameDev" << endl;
+    cout << "Your choice: ";
 
-public:
-	Parrot(const string& name, const string& breed, const string& color,
-		const string& PetParent_name, double weight, double height, int age, bool canTalk)
-		: Pet(name, breed, color, PetParent_name, weight, height, age), canTalk(canTalk) {}
-	virtual ~Parrot() {}
-	string getSound() const override { return "Squawk"; }
-	string getType() const override { return "Parrot"; }
+    int choice;
+    cin >> choice;
 
-	bool getCanTalk() const { return canTalk; }
-	bool setCanTalk(bool canTalk) {
-		this->canTalk = canTalk;
-		return this->canTalk;
-	}
-
-	void displayInfo() const override {
-		Pet::displayInfo();
-		cout << "Can talk: " << (canTalk ? "Yes" : "No") << endl;
-	}
-};
-
-class Hamster : public Pet {
-private:
-	bool hasWheel;
-
-public:
-	Hamster(const string& name, const string& breed, const string& color,
-		const string& PetParent_name, double weight, double height, int age, bool hasWheel)
-		: Pet(name, breed, color, PetParent_name, weight, height, age), hasWheel(hasWheel) {}
-	virtual ~Hamster() {}
-	string getSound() const override { return "Squeak"; }
-	string getType() const override { return "Hamster"; }
-
-	bool getHasWheel() const { return hasWheel; }
-	bool setHasWheel(bool hasWheel) {
-		this->hasWheel = hasWheel;
-		return this->hasWheel;
-	}
-
-	void displayInfo() const override {
-		Pet::displayInfo();
-		cout << "Has wheel: " << (hasWheel ? "Yes" : "No") << endl;
-	}
-};
-
+    switch (choice) {
+    case 1: return Specialization::Frontend;
+    case 2: return Specialization::Backend;
+    case 3: return Specialization::Fullstack;
+    case 4: return Specialization::Mobile;
+    case 5: return Specialization::GameDev;
+    default:
+        cout << "Wrong choice, Backend is set by default." << endl;
+        return Specialization::Backend;
+    }
+}
 
 int main() {
 
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	Pet* cat = new Cat("Murka", "British", "Grey", "Olena", 4.5, 30.0, 2, true);
-	Pet* dog = new Dog("Rex", "Labrador", "Brown", "Ivan", 25.0, 55.0, 3, true);
-	Pet* parrot = new Parrot("Kesha", "Macaw", "Green", "Petro", 0.4, 30.0, 1, true);
-	Pet* hamster = new Hamster("Fluffy", "Syrian", "White", "Anna", 0.15, 10.0, 1, false);
+    FullName managerName = { "Petrenko", "Ivan", "Olegovych" };
+    DateTime managerBirth = { 1990, 5, 12, 0, 0, 0 };
+    DateTime managerWorkTime = { 0, 0, 0, 8, 0, 0 }; 
 
-	cat->displayInfo();
-	dog->displayInfo();
-	parrot->displayInfo();
-	hamster->displayInfo();
+    FullName devName = { "Kovalenko", "Olena", "Petrivna" };
+    DateTime devBirth = { 1995, 8, 23, 0, 0, 0 };
+    DateTime devWorkTime = { 0, 0, 0, 6, 30, 0 }; 
 
-	delete cat;
-	delete dog;
-	delete parrot;
-	delete hamster;
+    Specialization spec = chooseSpecialization();
+
+    const int SIZE = 2;
+    Employee* employees[SIZE];
+    employees[0] = new Manager(managerName, managerBirth, 5, managerWorkTime, 20, 300.0);
+    employees[1] = new Developer(devName, devBirth, 3, devWorkTime, 20, 450, spec);
+
+    double totalSalary = 0.0;
+
+    cout << "\n=== Employees info ===" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        employees[i]->displayInfo();
+        totalSalary += employees[i]->calculateSalary();
+    }
+
+    cout << "\nTotal salary company must pay this month: " << totalSalary << " EUR" << endl;
+
+    for (int i = 0; i < SIZE; i++) {
+        delete employees[i];
+    }
+
 
 	return 0;
 }
