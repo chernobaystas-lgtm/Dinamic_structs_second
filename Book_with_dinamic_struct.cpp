@@ -281,18 +281,28 @@ public:
 };
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
 
-	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleCP(CP_UTF8);
+    TransportMeans* car = new Car(FuelType::Petrol, 5, 4, 4, "Sedan");
+    TransportMeans* bus = new Bus(FuelType::Diesel, 30, 2, 6, "Kyiv - Lviv", 3);
+
+    static_cast<Bus*>(bus)->addStop("Kyiv");
+    static_cast<Bus*>(bus)->addStop("Zhytomyr");
+    static_cast<Bus*>(bus)->addStop("Rivne");
+    static_cast<Bus*>(bus)->addStop("Lviv");
+
+    cout << "--- Car ---" << endl;
+    car->displayInfo();
+
+    cout << "\n--- Bus ---" << endl;
+    bus->displayInfo();
+
+    car->breakPart(PartType::Engine);
 
 
+    delete car;
+    delete bus;
 
-    Car car(FuelType::Petrol, 5, 4, 4, "Sedan");
-    car.displayInfo();
-
-    car.breakPart(PartType::Engine);
-    car.displayInfo(); 
-
-
-	return 0;
+    return 0;
 }
