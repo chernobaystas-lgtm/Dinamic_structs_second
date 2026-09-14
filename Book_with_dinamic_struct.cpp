@@ -182,6 +182,9 @@ protected:
     PartType brokenPart;
 
 public:
+
+    TransportMeans() : fuel(FuelType::Petrol), seats(0), doors(0), wheels(4), brokenPart(PartType::None) {}
+
     TransportMeans(FuelType fuel, int seats, int doors, int wheels)
         : fuel(fuel), seats(seats), doors(doors), wheels(wheels), brokenPart(PartType::None) {}
 
