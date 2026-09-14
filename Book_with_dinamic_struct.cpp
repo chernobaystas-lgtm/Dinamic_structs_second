@@ -280,29 +280,114 @@ public:
     }
 };
 
+
+class Marshrutka : public TransportMeans {
+private:
+    string route;
+    string stops[20];
+    int stopsCount;
+    int tripsPerDay;
+
+public:
+    Marshrutka(FuelType fuel, int seats, int doors,
+        const string& route, int tripsPerDay)
+        : TransportMeans(fuel,
+            (seats < 8 || seats > 20) ? 8 : seats,
+            (doors < 1 || doors > 2) ? 1 : doors,
+            4), 
+        route(route), stopsCount(0),
+        tripsPerDay((tripsPerDay < 1 || tripsPerDay > 15) ? 5 : tripsPerDay)
+    {
+        if (seats < 8 || seats > 20)
+            cerr << "Warning: seats out of range [8,20], set to default 8" << endl;
+        if (doors < 1 || doors > 2)
+            cerr << "Warning: doors out of range [1,2], set to default 1" << endl;
+        if (tripsPerDay < 1 || tripsPerDay > 15)
+            cerr << "Warning: tripsPerDay out of range [1,15], set to default 5" << endl;
+    }
+
+    string getRoute() const { return route; }
+    void setRoute(const string& r) { route = r; }
+
+    int getTripsPerDay() const { return tripsPerDay; }
+    void setTripsPerDay(int trips) {
+        tripsPerDay = (trips < 1 || trips > 15) ? tripsPerDay : trips;
+    }
+
+    void addStop(const string& stop) {
+        if (stopsCount >= 20) {
+            cerr << "Cannot add more stops, limit reached!" << endl;
+            return;
+        }
+        stops[stopsCount] = stop;
+        stopsCount++;
+    }
+
+    void displayInfo() const override {
+        TransportMeans::displayInfo();
+        cout << "Route: " << route << ", Trips per day: " << tripsPerDay << endl;
+        cout << "Stops: ";
+        for (int i = 0; i < stopsCount; i++) {
+            cout << stops[i];
+            if (i != stopsCount - 1) cout << " -> ";
+        }
+        cout << endl;
+    }
+};
+
+
+
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    TransportMeans* car = new Car(FuelType::Petrol, 5, 4, 4, "Sedan");
-    TransportMeans* bus = new Bus(FuelType::Diesel, 30, 2, 6, "Kyiv - Lviv", 3);
+    const int FLEET_SIZE = 3;
+    TransportMeans* fleet[FLEET_SIZE];
 
-    static_cast<Bus*>(bus)->addStop("Kyiv");
-    static_cast<Bus*>(bus)->addStop("Zhytomyr");
-    static_cast<Bus*>(bus)->addStop("Rivne");
-    static_cast<Bus*>(bus)->addStop("Lviv");
+    fleet[0] = new Car(FuelType::Petrol, 5, 4, 4, "Sedan");
+    fleet[1] = new Bus(FuelType::Diesel, 30, 2, 6, "Kyiv - Lviv", 3);
+    fleet[2] = new Marshrutka(FuelType::Gas, 15, 1, "Center - Airport", 8);
 
-    cout << "--- Car ---" << endl;
-    car->displayInfo();
+    static_cast<Bus*>(fleet[1])->addStop("Kyiv");
+    static_cast<Bus*>(fleet[1])->addStop("Zhytomyr");
+    static_cast<Bus*>(fleet[1])->addStop("Rivne");
+    static_cast<Bus*>(fleet[1])->addStop("Lviv");
 
-    cout << "\n--- Bus ---" << endl;
-    bus->displayInfo();
+    static_cast<Marshrutka*>(fleet[2])->addStop("Center");
+    static_cast<Marshrutka*>(fleet[2])->addStop("Mall");
+    static_cast<Marshrutka*>(fleet[2])->addStop("Airport");
 
-    car->breakPart(PartType::Engine);
+    cout << "=== Autopark before trips ===" << endl;
+    for (int i = 0; i < FLEET_SIZE; i++) {
+        fleet[i]->displayInfo();
+        cout << endl;
+    }
 
+    // Симулируем поломку: одно из средств выходит из строя перед рейсом
+    fleet[1]->breakPart(PartType::Wheel); // автобус ломается
 
-    delete car;
-    delete bus;
+    int totalPassengers = 0;
+    const int TRIPS = 2;
+
+    cout << "=== Simulating " << TRIPS << " trips ===" << endl;
+    for (int trip = 1; trip <= TRIPS; trip++) {
+        cout << "--- Trip " << trip << " ---" << endl;
+        for (int i = 0; i < FLEET_SIZE; i++) {
+            if (fleet[i]->isWorking()) {
+                totalPassengers += fleet[i]->getSeats();
+                cout << "Vehicle " << i << " carried " << fleet[i]->getSeats() << " passengers" << endl;
+            }
+            else {
+                cout << "Vehicle " << i << " is broken, skipped this trip" << endl;
+            }
+        }
+    }
+
+    cout << "\nMax passengers transported in " << TRIPS << " trips: " << totalPassengers << endl;
+
+    for (int i = 0; i < FLEET_SIZE; i++) {
+        delete fleet[i];
+    }
 
     return 0;
 }
