@@ -363,8 +363,7 @@ int main() {
         cout << endl;
     }
 
-    // Симулируем поломку: одно из средств выходит из строя перед рейсом
-    fleet[1]->breakPart(PartType::Wheel); // автобус ломается
+    fleet[1]->breakPart(PartType::Wheel); 
 
     int totalPassengers = 0;
     const int TRIPS = 2;
