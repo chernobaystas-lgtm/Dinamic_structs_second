@@ -210,12 +210,35 @@ public:
     }
 };
 
+class Car : public TransportMeans {
+private:
+    string bodyType; 
 
+public:
+    Car(FuelType fuel, int seats, int doors, int wheels, const string& bodyType)
+        : TransportMeans(fuel, seats, doors, wheels), bodyType(bodyType) {}
+
+    string getBodyType() const { return bodyType; }
+    void setBodyType(const string& type) { bodyType = type; }
+
+    void displayInfo() const override {
+        TransportMeans::displayInfo();
+        cout << "Body type: " << bodyType << endl;
+    }
+};
 
 int main() {
 
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
+
+
+
+    Car car(FuelType::Petrol, 5, 4, 4, "Sedan");
+    car.displayInfo();
+
+    car.breakPart(PartType::Engine);
+    car.displayInfo(); // теперь Status: Broken (Engine)
 
 
 	return 0;
