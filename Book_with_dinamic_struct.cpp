@@ -227,6 +227,59 @@ public:
     }
 };
 
+
+class Bus : public TransportMeans {
+private:
+    string route;
+    string stops[20];   
+    int stopsCount;      
+    int tripsPerDay;
+
+public:
+    Bus(FuelType fuel, int seats, int doors, int wheels,
+        const string& route, int tripsPerDay)
+        : TransportMeans(fuel,
+            (seats < 6 || seats > 40) ? 6 : seats,
+            (doors < 2 || doors > 4) ? 2 : doors,
+            (wheels < 2 || wheels > 8) ? 2 : wheels),
+        route(route), stopsCount(0),
+        tripsPerDay(tripsPerDay < 1 ? 1 : tripsPerDay)
+    {
+        if (seats < 6 || seats > 40)
+            cerr << "Warning: seats out of range [6,40], set to default 6" << endl;
+        if (doors < 2 || doors > 4)
+            cerr << "Warning: doors out of range [2,4], set to default 2" << endl;
+        if (wheels < 2 || wheels > 8)
+            cerr << "Warning: wheels out of range [2,8], set to default 2" << endl;
+    }
+
+    string getRoute() const { return route; }
+    void setRoute(const string& r) { route = r; }
+
+    int getTripsPerDay() const { return tripsPerDay; }
+    void setTripsPerDay(int trips) { tripsPerDay = (trips < 1) ? 1 : trips; }
+
+    void addStop(const string& stop) {
+        if (stopsCount >= 20) {
+            cerr << "Cannot add more stops, limit reached!" << endl;
+            return;
+        }
+        stops[stopsCount] = stop;
+        stopsCount++;
+    }
+
+    void displayInfo() const override {
+        TransportMeans::displayInfo();
+        cout << "Route: " << route << ", Trips per day: " << tripsPerDay << endl;
+        cout << "Stops: ";
+        for (int i = 0; i < stopsCount; i++) {
+            cout << stops[i];
+            if (i != stopsCount - 1) cout << " -> ";
+        }
+        cout << endl;
+    }
+};
+
 int main() {
 
 	SetConsoleOutputCP(CP_UTF8);
@@ -238,7 +291,7 @@ int main() {
     car.displayInfo();
 
     car.breakPart(PartType::Engine);
-    car.displayInfo(); // теперь Status: Broken (Engine)
+    car.displayInfo(); 
 
 
 	return 0;
