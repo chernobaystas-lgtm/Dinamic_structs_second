@@ -22,6 +22,12 @@ int main()
             for (int i = 0; i < x.length(); i++) {
                 int digit = x[i] - '0';
                 result = result * 10 + digit;
+                if (result > 1) {  
+                    throw string("число виходить за межі");
+                }
+                if (result < 1) {
+                    throw string("число виходить за межі");
+                }
                 if (result > 2147483647) {
                     throw string("число виходить за межі int");
                 }
