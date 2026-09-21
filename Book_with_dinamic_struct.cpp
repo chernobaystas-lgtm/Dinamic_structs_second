@@ -1,10 +1,46 @@
 ﻿#include <iostream>
 #include <string>
 #include <windows.h>
-#include <cmath>
+#include <memory>
 #include <fstream>
+#include <limits>
+#include <stdexcept>
 using namespace std;
 
+
+#define NOMINMAX
+
+enum class Answer { No = 0, Yes = 1 };
+
+class Console {
+public:
+    static bool askYesNo(const string& question) {
+        while (true) {
+            cout << question << " (1 - так, 0 - ні): ";
+            int value;
+            if (cin >> value && (value == 0 || value == 1)) {
+                cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+                return static_cast<Answer>(value) == Answer::Yes;
+            }
+            cin.clear();  
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            cout << "Введіть 1 або 0." << endl;
+        }
+    }
+
+    static int readInt() {
+        while (true) {
+            int value;
+            if (cin >> value) {
+                cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+                return value;
+            }
+            cin.clear();
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            cout << "Введіть число." << endl;
+        }
+    }
+};
 
 class Firm {
 private:
@@ -53,15 +89,26 @@ public:
     string getAdress() const { return Adress; }
     string getProfession() const { return profession; }
     string getPhone() const { return telephone; }
+
+    static Firm readFromConsole() {
+        string name, owner, adress, prof, phone;
+        cout << "Назва: ";      getline(cin, name);
+        cout << "Власник: ";    getline(cin, owner);
+        cout << "Адреса: ";     getline(cin, adress);
+        cout << "Діяльність: "; getline(cin, prof);
+        cout << "Телефон: ";    getline(cin, phone);
+        return Firm(name, owner, adress, prof, phone);
+    }
 };
 
 
 class Directory{
 private:
-    Firm* firms;      
+    unique_ptr<Firm[]> firms;
     int count;       
     int capacity;      
     string filename;
+    bool modified;
 
     void ensureCapacity(int needed) {
         if (needed <= capacity) return;
@@ -69,54 +116,55 @@ private:
         int newCapacity = (capacity == 0) ? 4 : capacity * 2;
         while (newCapacity < needed) newCapacity *= 2;
 
-        Firm* newArr = new Firm[newCapacity];
+        auto newArr = make_unique<Firm[]>(newCapacity);
         for (int i = 0; i < count && i < capacity; i++) {
-            newArr[i] = firms[i];
+            newArr[i] = move(firms[i]);
         }
 
-        delete[] firms;
-        firms = newArr;
+        firms = move(newArr);
         capacity = newCapacity;
     }
 public:
-    Directory(const string& file) : firms(nullptr), count(0), capacity(0), filename(file) {}
+    Directory(const string& file)
+        : firms(nullptr), count(0), capacity(0), filename(file), modified(false) {}
 
+    bool isModified() const { return modified; }
     Directory(const Directory&) = delete;
     Directory& operator=(const Directory&) = delete;
 
-    ~Directory() {
-        delete[] firms;
-    }
 
-    void loadFromFile() {
+    bool loadFromFile() {
         ifstream in(filename);
         if (!in.is_open()) {
             cerr << "Не вдалося відкрити файл для читання: " << filename << endl;
-            return;
+            return false;
         }
 
+        count = 0; 
         Firm temp;
         while (in >> temp) {
             ensureCapacity(count + 1);
-            firms[count] = temp;
+            firms[count] = move(temp);
             count++;
         }
 
-        in.close();
+        modified = false;
+        return true;
     }
 
-    void saveToFile() const {
-        ofstream out(filename, ios::out | ios::trunc);  
+    bool saveToFile() {
+        ofstream out(filename, ios::out | ios::trunc);
         if (!out.is_open()) {
             cerr << "Не вдалося відкрити файл для запису: " << filename << endl;
-            return;
+            return false;
         }
 
         for (int i = 0; i < count; i++) {
             out << firms[i];
         }
 
-        out.close();
+        modified = false;
+        return true;
     }
 
     void add(const Firm& f) {
@@ -209,52 +257,42 @@ public:
     }
 };
 
+enum class MenuItem {
+    Exit, ShowAll, Add, Remove,
+    FindName, FindOwner, FindPhone, FindProfession,
+    Save, Load
+};
+
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    string filepath = "Firma.txt";
-    Directory dir(filepath);
-    dir.loadFromFile();
+    auto dir = make_unique<Directory>("Firma.txt");
+    dir->loadFromFile();
 
-    if (dir.isEmpty()) {
+    if (dir->isEmpty()) {
         cout << "Довідник порожній. Почнемо з додавання фірм." << endl;
     }
-    else if (dir.size() == 1) {
+    else if (dir->size() == 1) {
         cout << "У довіднику знайдено одну фірму:" << endl;
-        dir.printAll();
+        dir->printAll();
 
-        cout << "Додати ще? (1 - так, 0 - ні): ";
-        int answer;
-        cin >> answer;
-        cin.ignore();
-
-        if (answer == 1) {
+        if (Console::askYesNo("Додати ще?")) {
             cout << "Скільки фірм хочете додати? ";
-            int n;
-            cin >> n;
-            cin.ignore();
-
+            int n = Console::readInt();
             for (int i = 0; i < n; i++) {
                 cout << "--- Фірма #" << (i + 1) << " ---" << endl;
-                string name, owner, adress, prof, phone;
-                cout << "Назва: ";      getline(cin, name);
-                cout << "Власник: ";    getline(cin, owner);
-                cout << "Адреса: ";     getline(cin, adress);
-                cout << "Діяльність: "; getline(cin, prof);
-                cout << "Телефон: ";    getline(cin, phone);
-
-                dir.add(Firm(name, owner, adress, prof, phone));
+                dir->add(Firm::readFromConsole());
             }
         }
     }
     else {
-        cout << "У довіднику " << dir.size() << " фірм(и)." << endl;
+        cout << "У довіднику " << dir->size() << " фірм(и)." << endl;
     }
 
-    int choice = -1;
-    while (choice != 0) {
+    MenuItem choice = MenuItem::ShowAll;   // любое значение кроме Exit
+    while (choice != MenuItem::Exit) {
         cout << "\n=== МЕНЮ ===" << endl;
         cout << "1. Показати всі фірми" << endl;
         cout << "2. Додати фірму" << endl;
@@ -263,73 +301,78 @@ int main()
         cout << "5. Пошук за власником" << endl;
         cout << "6. Пошук за телефоном" << endl;
         cout << "7. Пошук за родом діяльності" << endl;
+        cout << "8. Зберегти" << endl;
+        cout << "9. Завантажити з файлу" << endl;
         cout << "0. Вихід" << endl;
         cout << "Ваш вибір: ";
-        cin >> choice;
-        cin.ignore();
+
+        int input = Console::readInt();
+        if (input < 0 || input > static_cast<int>(MenuItem::Load)) {
+            cout << "Невірний пункт меню." << endl;
+            continue;
+        }
+        choice = static_cast<MenuItem>(input);
 
         try {
             switch (choice) {
-            case 1:
-                if (dir.isEmpty())
-                    cout << "Довідник порожній." << endl;
-                else
-                    dir.printAll();
+            case MenuItem::ShowAll:
+                dir->printAll();
                 break;
 
-            case 2: {
+            case MenuItem::Add:
                 cout << "--- Нова фірма ---" << endl;
-                string name, owner, adress, prof, phone;
-                cout << "Назва: ";      getline(cin, name);
-                cout << "Власник: ";    getline(cin, owner);
-                cout << "Адреса: ";     getline(cin, adress);
-                cout << "Діяльність: "; getline(cin, prof);
-                cout << "Телефон: ";    getline(cin, phone);
-                dir.add(Firm(name, owner, adress, prof, phone));
+                dir->add(Firm::readFromConsole());
                 cout << "Додано." << endl;
                 break;
-            }
 
-            case 3: {
+            case MenuItem::Remove:
                 cout << "Індекс запису для видалення: ";
-                int idx;
-                cin >> idx;
-                dir.remove(idx);   
+                dir->remove(Console::readInt());
                 cout << "Видалено." << endl;
                 break;
-            }
 
-            case 4: {
+            case MenuItem::FindName: {
                 cout << "Назва для пошуку: ";
                 string q; getline(cin, q);
-                dir.findByName(q);
+                dir->findByName(q);
                 break;
             }
-            case 5: {
+            case MenuItem::FindOwner: {
                 cout << "Власник для пошуку: ";
                 string q; getline(cin, q);
-                dir.findByOwner(q);
+                dir->findByOwner(q);
                 break;
             }
-            case 6: {
+            case MenuItem::FindPhone: {
                 cout << "Телефон для пошуку: ";
                 string q; getline(cin, q);
-                dir.findByPhone(q);
+                dir->findByPhone(q);
                 break;
             }
-            case 7: {
+            case MenuItem::FindProfession: {
                 cout << "Рід діяльності для пошуку: ";
                 string q; getline(cin, q);
-                dir.findByProfession(q);
+                dir->findByProfession(q);
                 break;
             }
 
-            case 0:
-                cout << "Вихід..." << endl;
+            case MenuItem::Save:
+                if (dir->saveToFile()) cout << "Збережено." << endl;
                 break;
 
-            default:
-                cout << "Невірний пункт меню." << endl;
+            case MenuItem::Load:
+                if (dir->isModified() &&
+                    !Console::askYesNo("Незбережені зміни буде втрачено. Продовжити?")) break;
+                if (dir->loadFromFile()) cout << "Завантажено." << endl;
+                break;
+
+            case MenuItem::Exit:
+                if (dir->isModified() &&
+                    Console::askYesNo("Є незбережені зміни. Зберегти?")) {
+                    dir->saveToFile();
+                }
+                cout << "Вихід..." << endl;
+                break;
             }
         }
         catch (const out_of_range& e) {
