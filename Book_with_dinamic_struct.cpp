@@ -5,10 +5,13 @@
 #include <algorithm>
 using namespace std;
 
-void show(const std::vector<int>& list) {
+void show(const vector<int>& list) {
     for (int x : list) { cout << x << " "; }
     cout << endl; 
 }
+
+int input(){}
+
 
 int main()
 {
