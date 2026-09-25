@@ -142,6 +142,9 @@
   <ItemGroup>
     <ClCompile Include="Book_with_dinamic_struct.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="For_sets.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
