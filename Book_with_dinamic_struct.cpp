@@ -22,17 +22,22 @@ int main()
         cerr << "Не удалось открыть файл\n";
         return 1;
     }
-    map<string, int> word_count;
+    map<string, int> myDictionary;
     string word;
 
     while (file >> word) {
-        word_count[word]++;
+        if (myDictionary.contains(word) == true) {
+            myDictionary[word] += 1;
+        }
+        else {
+            myDictionary[word] = 1;
+        }
     }
 
     file.close();
 
-    for (const auto& pair : word_count) {
-        cout << pair.first << ": " << pair.second << "\n";
+    for (auto it : myDictionary) {
+        cout << "key: " << it.first << "\t" << " value: " << it.second << endl;
     }
 
     return 0;
