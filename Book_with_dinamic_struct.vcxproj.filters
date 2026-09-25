@@ -23,5 +23,8 @@
     <Text Include="For_sets.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="For_maps.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>
