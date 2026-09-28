@@ -1,8 +1,6 @@
-// User.h
 #pragma once
 
 #include "Common.h"
-
 
 class User : public Base
 {
@@ -33,7 +31,7 @@ public:
 
     bool Authenticate();
 
-    void ShowProfile() const override;
+    void ShowProfile() const;
 
     void EditProfile();
 

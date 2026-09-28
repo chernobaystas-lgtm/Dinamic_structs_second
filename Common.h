@@ -1,4 +1,3 @@
-// Common.h
 #pragma once
 
 #define NOMINMAX

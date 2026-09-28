@@ -1,5 +1,4 @@
-﻿// Book_with_dynamic_struct.cpp
-#include "Admin.h"
+﻿#include "Admin.h"
 
 
 int main()
