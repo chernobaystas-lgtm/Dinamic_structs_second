@@ -1,94 +1,5 @@
-﻿#include "Common.h"
-
-enum class Answer
-{
-    A,
-    B,
-    C,
-    D,
-    NONE
-};
-
-
-struct Question
-{
-    string text;          
-    string options[4];   
-    char correctAnswer;   
-};
-
-Answer charToAnswer(char c)
-{
-    c = toupper(c);
-
-    if (c == 'A')
-        return Answer::A;
-
-    if (c == 'B')
-        return Answer::B;
-
-    if (c == 'C')
-        return Answer::C;
-
-    if (c == 'D')
-        return Answer::D;
-
-    return Answer::NONE;
-}
-
-
-void LoadQuestions(map<int, Question>& questions)
-{
-    ifstream file("For_maps2.txt");
-
-    if (!file.is_open())
-    {
-        cout << "Oshibka: ne udalos otkryt For_maps2.txt!\n";
-        return;
-    }
-
-    string line;
-
-    while (getline(file, line))
-    {
-        if (line.empty())
-            continue;
-
-        if (line.size() >= 3 &&
-            (unsigned char)line[0] == 0xEF &&
-            (unsigned char)line[1] == 0xBB &&
-            (unsigned char)line[2] == 0xBF)
-        {
-            line.erase(0, 3);
-        }
-
-        stringstream ss(line);
-
-        string numberText;
-        string correctText;
-
-        Question question{};
-
-        getline(ss, numberText, '|');
-
-        getline(ss, question.text, '|');
-
-        for (int i = 0; i < 4; i++)
-        {
-            getline(ss, question.options[i], '|');
-        }
-
-        getline(ss, correctText, '|');
-
-        int number = stoi(numberText);
-
-        question.correctAnswer = toupper(correctText[0]);
-
-        questions[number] = question;
-    }
-
-    file.close();
-}
+﻿// Book_with_dynamic_struct.cpp
+#include "Admin.h"
 
 
 int main()
@@ -96,102 +7,202 @@ int main()
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    map<int, Question> questions;
-
-    LoadQuestions(questions);
-
-    if (questions.empty())
+    while (true)
     {
-        cout << "Voprosy ne zagruzheny.\n";
-        cout << "Proverte For_maps2.txt.\n";
-        system("pause");
-        return 0;
-    }
-
-
-    cout << "====================================\n";
-    cout << "          VIKTORINA\n";
-    cout << "====================================\n";
-
-    cout << "Kolichestvo voprosov: "
-        << questions.size() << "\n";
-
-
-    int score = 0;
-
-
-    for (const auto& item : questions)
-    {
-        int number = item.first;
-
-        const Question& question = item.second;
-
-
         cout << "\n";
-        cout << "------------------------------------\n";
+        cout << "========================================\n";
+        cout << "              ВИКТОРИНА\n";
+        cout << "========================================\n";
 
-        cout << number << ". "
-            << question.text << "\n\n";
+        cout << "Enter - Гость\n";
+        cout << "1 - Пользователь\n";
+        cout << "2 - Администратор\n";
+        cout << "0 - Выход\n";
 
+        cout << "\nВаш выбор: ";
 
-        cout << "A) " << question.options[0] << "\n";
-        cout << "B) " << question.options[1] << "\n";
-        cout << "C) " << question.options[2] << "\n";
-        cout << "D) " << question.options[3] << "\n";
+        string choice;
+        getline(cin, choice);
 
-
-        char answer;
-
-        while (true)
+        if (choice.empty())
         {
-            cout << "\nVash otvet: ";
-            cin >> answer;
+            map<int, Question> guestQuestions;
 
-            answer = toupper(answer);
+            LoadQuestions(
+                "Test2.txt",
+                guestQuestions
+            );
 
-
-            if (answer == 'A' ||
-                answer == 'B' ||
-                answer == 'C' ||
-                answer == 'D')
+            if (guestQuestions.empty())
             {
-                break;
+                cout << "\nГостевой тест не найден.\n";
+                continue;
             }
 
-            cout << "Oshibka! Vvedite tolko A, B, C ili D.\n";
+            cout << "\n========== ГОСТЕВОЙ ТЕСТ ==========\n";
+
+            int difficulty = ReadInt(
+                "Выберите уровень сложности "
+                "(1 - легкий, 2 - средний, 3 - сложный, 4 - все): ",
+                1,
+                4
+            );
+
+            vector<Question> selected;
+
+            for (const auto& [number, question] : guestQuestions)
+            {
+                if (difficulty == 4 ||
+                    question.difficulty == difficulty)
+                {
+                    selected.push_back(question);
+                }
+            }
+
+            if (selected.empty())
+            {
+                cout << "Вопросов на этом уровне нет.\n";
+                continue;
+            }
+
+            int score = 0;
+
+            for (const Question& question : selected)
+            {
+                ShowQuestion(question);
+
+                char answer = ReadAnswerLetter(
+                    static_cast<int>(
+                        question.options.size()
+                        )
+                );
+
+                if (IsCorrectAnswer(answer, question))
+                {
+                    cout << "Правильно!\n";
+                    score++;
+                }
+                else
+                {
+                    cout << "Неправильно!\n";
+                    cout << "Правильный ответ: "
+                        << question.correctAnswer
+                        << '\n';
+                }
+            }
+
+            double percent =
+                static_cast<double>(score) /
+                selected.size() * 100.0;
+
+            cout << "\n========================================\n";
+            cout << "              РЕЗУЛЬТАТ\n";
+            cout << "========================================\n";
+
+            cout << "Правильных ответов: "
+                << score
+                << " из "
+                << selected.size()
+                << '\n';
+
+            cout << "Результат: "
+                << percent
+                << "%\n";
+
+            continue;
         }
 
-        
-        if (answer == question.correctAnswer)
+        if (choice == "0")
         {
-            cout << "Pravilno!\n";
-            score++;
+            break;
         }
-        else
+
+        if (choice == "1")
         {
-            cout << "Nepravilno!\n";
+            while (true)
+            {
+                cout << "\n";
+                cout << "========================================\n";
+                cout << "       АВТОРИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ\n";
+                cout << "========================================\n";
+
+                cout << "1. Авторизация\n";
+                cout << "2. Регистрация\n";
+                cout << "0. Назад\n";
+
+                int userChoice = ReadInt(
+                    "Выберите действие: ",
+                    0,
+                    2
+                );
+
+                if (userChoice == 0)
+                    break;
+
+                User user;
+
+                if (userChoice == 2)
+                {
+                    if (user.Register())
+                        user.UserMenu();
+
+                    continue;
+                }
+
+                if (userChoice == 1)
+                {
+                    if (user.Authenticate())
+                        user.UserMenu();
+                }
+            }
+
+            continue;
         }
+
+        if (choice == "2")
+        {
+            while (true)
+            {
+                cout << "\n";
+                cout << "========================================\n";
+                cout << "       АВТОРИЗАЦИЯ АДМИНИСТРАТОРА\n";
+                cout << "========================================\n";
+
+                cout << "1. Авторизация\n";
+                cout << "2. Регистрация администратора\n";
+                cout << "0. Назад\n";
+
+                int adminChoice = ReadInt(
+                    "Выберите действие: ",
+                    0,
+                    2
+                );
+
+                if (adminChoice == 0)
+                    break;
+
+                Admin admin;
+
+                if (adminChoice == 2)
+                {
+                    if (admin.RegisterAdmin())
+                        admin.AdminMenu();
+
+                    continue;
+                }
+
+                if (adminChoice == 1)
+                {
+                    if (admin.AuthenticateAdmin())
+                        admin.AdminMenu();
+                }
+            }
+
+            continue;
+        }
+
+        cout << "Неверный выбор.\n";
     }
-
-
-    cout << "\n====================================\n";
-    cout << "             REZULTAT\n";
-    cout << "====================================\n";
-
-    cout << "Pravilnyh otvetov: "
-        << score << " iz "
-        << questions.size() << "\n";
-
-
-    double percent =
-        static_cast<double>(score) /
-        questions.size() * 100.0;
-
-    cout << "Rezultat: "
-        << percent << "%\n";
-
-
-    system("pause");
 
     return 0;
 }
