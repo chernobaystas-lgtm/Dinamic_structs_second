@@ -140,12 +140,21 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Admin.cpp" />
     <ClCompile Include="Book_with_dinamic_struct.cpp" />
+    <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="For_maps.txt" />
-    <Text Include="For_maps2.txt" />
-    <Text Include="For_sets.txt" />
+    <Text Include="Admin.txt" />
+    <Text Include="Guest.txt" />
+    <Text Include="User.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Admin.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Quest.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

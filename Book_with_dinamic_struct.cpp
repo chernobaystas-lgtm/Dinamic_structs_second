@@ -1,13 +1,4 @@
-﻿#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <map>
-#include <cctype>
-#include <windows.h>
-
-using namespace std;
-
+﻿#include "Common.h"
 
 enum class Answer
 {
