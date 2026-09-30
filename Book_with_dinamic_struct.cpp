@@ -1,4 +1,16 @@
-﻿#include "Common.h"
+﻿#include <windows.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
+#include <limits>
+#include <cctype>
+#include <algorithm>
+#include <format>
+
+using namespace std;
 
 
 
@@ -7,6 +19,7 @@ class City {
 protected:
     string name;
     double area;
+    // civilians
 
 public:
     City(): area{0.0} {}
@@ -18,12 +31,24 @@ public:
     void setArea(double newArea) { area = newArea; }
 };
 
+
+bool hasCity(const vector<City>& v, const string& name)
+{
+    auto it = find_if(v.begin(), v.end(), [&name](const City& c)
+        {
+            return c.getName() == name;
+        });
+
+    return it != v.end();
+}
+
 class Country {
 private:
     string name;
     vector<City> cities;
     string nativeLanguage;
     string president;
+    // type_of_control
 
 public:
     Country() = default;
@@ -168,12 +193,7 @@ string inputNewCountryName(const map<string, Country>& db) {
     return name;
 }
 
-bool hasCity(const vector<City>& v, const string& name) {
-    auto it = find_if(v.begin(), v.end(), [&name](const City& c) {
-        return c.getName() == name;
-        });
-    return it != v.end();
-}
+
 
 bool isBlank(const string& s) {
     return s.find_first_not_of(" \t") == string::npos;
@@ -229,11 +249,11 @@ string inputNonBlank(const string& prompt) {
 }
 
 bool askYesNo(const string& question) {
-    string s;
+    string s; // char
     while (true) {
         cout << question << " (д/н): ";
         getline(cin, s);
-        if (s == "д" || s == "Д" || s == "y" || s == "Y") return true;
+        if (s == "д" || s == "Д" || s == "y" || s == "Y") return true; // tolower ot toupper
         if (s == "н" || s == "Н" || s == "n" || s == "N") return false;
         cout << "Введи д или н\n";
     }
@@ -256,7 +276,7 @@ Country inputCountry(const map<string, Country>& db) {
     return Country(name, cities, lang, pres);
 }
 
-bool addCountry(map<string, Country>& db, const Country& c) {
+bool addCountry(map<string, Country>& db, const Country& c) {   // crot
     return db.insert({ c.getcountryName(), c }).second;
 }
 
@@ -363,6 +383,8 @@ void printMenu() {
 }
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     const string path = "forcountry.txt";
     map<string, Country> db = load(path);
     int choice;
@@ -481,4 +503,5 @@ int main() {
             cout << "Нет такого пункта\n";
         }
     } while (choice != 0);
+    return 0;
 }
