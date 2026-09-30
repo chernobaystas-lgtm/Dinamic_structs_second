@@ -32,15 +32,6 @@ public:
 };
 
 
-bool hasCity(const vector<City>& v, const string& name)
-{
-    auto it = find_if(v.begin(), v.end(), [&name](const City& c)
-        {
-            return c.getName() == name;
-        });
-
-    return it != v.end();
-}
 
 class Country {
 private:
@@ -67,7 +58,15 @@ public:
     void setNativeLanguage(const string& newLanguage) { nativeLanguage = newLanguage; }
     void setPresident(const string& newPresident) { president = newPresident; }
 
+    bool hasCity(const vector<City>& v, const string& name)
+    {
+        auto it = find_if(v.begin(), v.end(), [&name](const City& c)
+            {
+                return c.getName() == name;
+            });
 
+        return it != v.end();
+    }
 
     bool addCity(const City& c) {
         if (hasCity(cities, c.getName())) return false;   
