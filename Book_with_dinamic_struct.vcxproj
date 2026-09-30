@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Admin.txt" />
+    <Text Include="Forcountry.txt" />
     <Text Include="For_maps2.txt" />
     <Text Include="Test2.txt" />
     <Text Include="User.txt" />

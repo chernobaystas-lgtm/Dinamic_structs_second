@@ -38,6 +38,9 @@
     <Text Include="Test2.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="Forcountry.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h">
